@@ -3,6 +3,10 @@ package com.github.to2mbn.to2nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 abstract public class NBT implements Cloneable {
@@ -60,7 +64,16 @@ abstract public class NBT implements Cloneable {
 
 	@Override
 	public String toString() {
-		return new JSONObject(unwrap()).toString();
+		Object unwrapped = unwrap();
+		if (unwrapped instanceof Map) {
+			return new JSONObject((Map<?, ?>) unwrapped).toString();
+		} else if (unwrapped instanceof Collection) {
+			return new JSONArray((List<?>) unwrapped).toString();
+		} else if (unwrapped.getClass().isArray()) {
+			return new JSONArray((List<?>) unwrapped).toString();
+		} else {
+			return new JSONObject(unwrapped).toString();
+		}
 	}
 
 	@Override
